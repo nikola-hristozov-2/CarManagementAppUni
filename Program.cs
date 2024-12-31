@@ -26,11 +26,48 @@ namespace CarManagementApplication
             builder.Services.AddScoped<IGarageService, GarageService>();
             builder.Services.AddScoped<ICarService, CarService>();
 
+            builder.Services.AddControllers().AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+            });
+
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "Car Management API",
+                    Version = "v1",
+                    Description = "API for managing cars, garages, and maintenance schedules."
+                });
+            });
+
             builder.Services.AddRouting(options => options.LowercaseUrls = true);
 
             var app = builder.Build();
 
+            if (app.Environment.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+                app.UseSwagger();
+                app.UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Car Management API v1");
+                    c.RoutePrefix = string.Empty;
+                });
+            }
+
+            app.UseCors(x => x
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials()
+            .WithOrigins("http://localhost:3000"));
+
             app.UseErrorHandlerMiddleware();
+
+            app.UseRouting();
+
+            app.MapControllers();
 
             app.Run();
 
