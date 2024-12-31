@@ -22,11 +22,18 @@ namespace CarManagementApplication
             builder.Services.AddScoped<IMaintenanceRepository, MaintenanceRepository>();
             builder.Services.AddScoped<IGarageRepository, GarageRepository>();
 
+            builder.Services.AddScoped<IMaintenanceService, MaintenanceService>();
+            builder.Services.AddScoped<IGarageService, GarageService>();
+            builder.Services.AddScoped<ICarService, CarService>();
+
+            builder.Services.AddRouting(options => options.LowercaseUrls = true);
+
             var app = builder.Build();
 
             app.UseErrorHandlerMiddleware();
 
             app.Run();
+
         }
     }
 }
